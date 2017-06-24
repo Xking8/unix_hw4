@@ -1,3 +1,18 @@
+#include <signal.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <string.h>
+#include <netinet/ip.h>
+#include <unistd.h>
+#include <sys/uio.h>
+#include <stdbool.h>
+#include <fcntl.h>
 #include "othello.h"
 
 static int width;
