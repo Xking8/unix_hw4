@@ -21,6 +21,7 @@ static int cx = 3;
 static int cy = 3;
 int player;
 int enemy;
+bool check(int y,int x);
 int
 main(int argc, char* argv[])
 {
@@ -160,15 +161,17 @@ restart:
             case 0x0d:
             case 0x0a:
             case KEY_ENTER:
-                board[cy][cx] = player;
-                char tmp[5];
-                sprintf(msg,"%d,%d,",cx,cy);
-                //printw("msg:%s",msg);
-                write(w_fd,msg,sizeof(msg));
-                draw_cursor(cx, cy, 1);
-                draw_score();
-                refresh();
-                turn = 0;
+                if(check(cy,cx)) {
+                    board[cy][cx] = player;
+                    char tmp[5];
+                    sprintf(msg,"%d,%d,",cx,cy);
+                    //printw("msg:%s",msg);
+                    write(w_fd,msg,sizeof(msg));
+                    draw_cursor(cx, cy, 1);
+                    draw_score();
+                    refresh();
+                    turn = 0;
+                }
                 break;
             case 'q':
             case 'Q':
@@ -243,3 +246,198 @@ quit:
 
 	return 0;
 }
+bool check(int y,int x) {
+    int direction[8] = {0};
+    int ckx,cky;
+    bool bcheck = 0;
+    if(x-1 >= 0)
+        if(board[y][x-1] == enemy) {
+            direction[0] = 1;
+            cky = y;
+            ckx = x-2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                ckx = ckx-1;
+            }
+
+        }
+    if(x-1>=0 && y-1>=0)
+        if(board[y-1][x-1] == enemy) {
+            direction[1] = 1;
+            cky = y-2;
+            ckx = x-2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                ckx = ckx-1;
+                cky = cky-1;
+            }
+
+        }
+    if(y-1>=0)
+        if(board[y-1][x] == enemy) {
+            direction[2] = 1;
+            cky = y-2;
+            ckx = x;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                cky = cky-1;
+            }
+
+        }
+    if(x+1<8 && y-1>=0)
+        if(board[y-1][x+1] == enemy) {
+            direction[3] = 1;
+            cky = y-2;
+            ckx = x+2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                cky = cky-1;
+                ckx = ckx+1;
+            }
+
+        }
+    move(height-5, 0);
+
+    if(x+1<8)
+        if(board[y][x+1] == enemy) {
+            direction[4] = 1;
+            cky = y;
+            ckx = x+2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+
+                
+                if(board[cky][ckx] == player)
+                {   
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                //cky = cky-1;
+                ckx = ckx+1;
+            }
+
+        }
+    if(x+1<8 && y+1<8)
+        if(board[y+1][x+1] == enemy) {
+            direction[5] = 1;
+            cky = y+2;
+            ckx = x+2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                cky = cky+1;
+                ckx = ckx+1;
+            }
+
+        }
+    if(y+1<8)
+        if(board[y+1][x] == enemy) {
+            direction[6] = 1;
+            cky = y+2;
+            ckx = x;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                cky = cky+1;
+                ckx = ckx;
+            }
+
+        }
+    if(x-1>=0 && y+1<8)
+        if(board[y+1][x-1] == enemy) {
+            direction[7] = 1;
+            cky = y+2;
+            ckx = x-2;
+            while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
+            {
+                
+                if(board[cky][ckx] == player)
+                {
+                    bcheck = 1;
+                    break;
+                }
+                else if(board[cky][ckx] == enemy)
+                    ;
+                else
+                    break;
+                cky = cky+1;
+                ckx = ckx-1;
+            }
+
+        }
+    return bcheck;
+    /*for(int idx = 0; idx < 8; idx++)
+    {
+        if(direction[idx]) {
+        while
+            switch(idx) {
+                case 0:
+                    x = x-1;
+                    
+            }
+        }
+    }*/
+}
+
+
+
