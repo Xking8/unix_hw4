@@ -131,9 +131,13 @@ draw_score() {
 	}
 	attron(A_BOLD);
 	move(box_top+3, box_left + 4*BOARDSZ + 10);
+	printw("                                ");
+	move(box_top+3, box_left + 4*BOARDSZ + 10);
 	printw("Player #1 ");
 	addch(PLAYER1SYM|COLOR_PAIR(colorplayer1));
 	printw(" : %d", white);
+	move(box_top+5, box_left + 4*BOARDSZ + 10);
+	printw("                                ");
 	move(box_top+5, box_left + 4*BOARDSZ + 10);
 	printw("Player #2 ");
 	addch(PLAYER2SYM|COLOR_PAIR(colorplayer2));
