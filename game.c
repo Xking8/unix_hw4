@@ -139,11 +139,14 @@ restart:
         serv_addr.sin_port=htons(myserv_port);
         if(bind(sockfd,(struct sockaddr*) &serv_addr,sizeof(serv_addr))<0)
             printw("server:can't bind local address");
-        printw("before listen\n");
+
+        refresh();
+        //printw("before listen\n");
         listen(sockfd,0);
-        printw("after listen\n");
+        //printw("after listen\n");
         w_fd=accept(sockfd,(struct sockaddr*)&cli_addr,&clilen);
-        printw("after accept newsock=%d\n",w_fd);
+        //printw("after accept newsock=%d\n",w_fd);
+        refresh();
     }
     else
     {
