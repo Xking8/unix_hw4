@@ -24,11 +24,25 @@ int enemy;
 int direction[8] = {0};
 bool check(int y,int x);
 void cal_snd(int y, int x);
+bool other_no_move = 0;
+void gameover();
 bool checkall() {
-    /*for(int i = 0; i < 8; i++) {
-        
-    }*/
-    return 1;
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
+            move(height/2,width/2);
+            //printw("%d,%d",i,j);
+            if(check(i,j))
+            {
+                memset(direction, 0, sizeof(direction));
+                return 1;
+            }
+            
+            memset(direction, 0, sizeof(direction));
+        }
+    }
+//    return 0;
+
+    return 0;
 }
 int
 main(int argc, char* argv[])
@@ -106,7 +120,7 @@ restart:
     move(height-5, 0);  
     if(strcmp(argv[1],"-s")==0) 
     {
-        printw("server\n");
+        //printw("server\n");
         turn = 1;
         player = PLAYER1;
         enemy = PLAYER2;
@@ -131,7 +145,7 @@ restart:
     }
     else
     {
-        printw("client\n");
+        //printw("client\n");
         turn = 0;
         player = PLAYER2;
         enemy = PLAYER1;
@@ -167,8 +181,20 @@ restart:
             if(checkall()==0) {//
                 turn = 0;
                 sprintf(msg,"-1,-1,");
-                continue;
+                write(w_fd,msg,sizeof(msg));
+                if(other_no_move)
+                {    gameover();
+                    sleep(5);
+                     break;
+                }
+                else
+                {   
+                    other_no_move = 0;
+                    continue;
+                }
             }
+            move(height/2+2,width/2);
+            //printw("after checkall");
             switch(ch) {
             case ' ':
             case 0x0d:
@@ -189,6 +215,8 @@ restart:
                 break;
             case 'q':
             case 'Q':
+                sprintf(msg,"-2,-2i,");
+                write(w_fd,msg,sizeof(msg));
                 goto quit;
                 break;
             case 'r':
@@ -240,17 +268,23 @@ restart:
             //printw("msg:%s\n",msg);
             char *sx = strtok(msg,",\n");
             char *sy = strtok(NULL,",\n");
-            
-            //printw("!!!!!!!!!!!%s%s",sx,sy);
-            board[atoi(sy)][atoi(sx)] = enemy;
-            cal_rcv(atoi(sy),atoi(sx));
-            draw_cursor(atoi(sx), atoi(sy), 0);
-            //draw_box(atoi(sx),atoi(sy),colorborder,0);
-            //refresh();
-            //draw_board();
-            draw_score();
-            refresh();
-            //draw_cursor(atoi(sx), atoi(sy), 0);
+            if (atoi(sy)==-2) {
+                goto quit;
+            }
+            if(atoi(sy)!=-1) { 
+                //printw("!!!!!!!!!!!%s%s",sx,sy);
+                board[atoi(sy)][atoi(sx)] = enemy;
+                cal_rcv(atoi(sy),atoi(sx));
+                draw_cursor(atoi(sx), atoi(sy), 0);
+                //draw_box(atoi(sx),atoi(sy),colorborder,0);
+                //refresh();
+                //draw_board();
+                draw_score();
+                refresh();
+                //draw_cursor(atoi(sx), atoi(sy), 0);
+            }
+            else //
+                other_no_move = 1;
             turn = 1;
 
         }//end of else turn
@@ -470,12 +504,12 @@ bool check_rcv(int y,int x) {
     bool bcheck = 0;
     /*if(board[y][x]!=0)//already has disc ddf
         return 0;*/
-    printw("in check_rcv dir 0");
+    //printw("in check_rcv dir 0");
 
     if(x-1 >= 0)
         if(board[y][x-1] == player) {
             //direction[0] = 1;
-            printw("in check_rcv dir 0");
+            //printw("in check_rcv dir 0");
             cky = y;
             ckx = x-2;
             while(ckx>=0&&cky>=0&&ckx<8&&cky<8)
@@ -676,13 +710,13 @@ void cal_rcv(int y, int x) {
     int calx = x;//+n
     int m,n;
     move(height-8,0);
-    printw("in call snd:%d,%d,%d,%d,%d,%d,%d,%d",direction[0],direction[1],direction[2],direction[3],direction[4],direction[5],direction[6],direction[7]);
+    //printw("in call snd:%d,%d,%d,%d,%d,%d,%d,%d",direction[0],direction[1],direction[2],direction[3],direction[4],direction[5],direction[6],direction[7]);
     for(int i = 0; i < 8; i++) {
         caly = y;
         calx = x;
         if(direction[i] == 1)
         {   
-            printw("in direction %d",i);
+            //printw("in direction %d",i);
             switch(i) {
                 case 0:
                     m = 0;
@@ -742,7 +776,7 @@ void cal_snd(int y, int x) {
         calx = x;
         if(direction[i] == 1)
         {   
-            printw("in direction %d",i);
+            //printw("in direction %d",i);
             switch(i) {
                 case 0:
                     m = 0;
@@ -791,6 +825,26 @@ void cal_snd(int y, int x) {
 
     memset(direction, 0, sizeof(direction));
 }
-
-
-
+void gameover() {
+    int i, j;
+    int me = 0, other = 0;
+    for(i = 0; i < BOARDSZ; i++) {
+        for(j = 0; j < BOARDSZ; j++) {
+            if(board[i][j] == player) me++;
+            if(board[i][j] == enemy) other++;
+        }
+    }
+    
+    move(height/2,width/2);
+    //printw("in gameover");
+    if(me > other)
+        printw("I WIN");
+    else if(me < other)
+        printw("LOSE");
+    else
+        printw("EVEN");
+    refresh();
+    fflush(stdout);
+    //sleep(10);
+    //exit(0);
+}

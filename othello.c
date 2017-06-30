@@ -22,6 +22,13 @@ init_board() {
 	bzero(board, sizeof(board));
 	board[3][3] = board[4][4] = PLAYER1;
 	board[3][4] = board[4][3] = PLAYER2;
+
+/*	board[3][3] = board[4][4] = PLAYER1;
+	board[3][4] = board[4][3] = PLAYER2;
+    for(int i=0;i<8;i++)
+        for(int j=0;j<7;j++)
+            board[i][j] = PLAYER1;
+	board[7][7] = board[6][6] = PLAYER2;*/
 }
 
 void
