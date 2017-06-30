@@ -80,7 +80,7 @@ main(int argc, char* argv[])
     curs_set(0);            // hide the cursor
 
     init_colors();
-
+/*
 restart:
     clear();
     cx = cy = 3;
@@ -89,7 +89,7 @@ restart:
     draw_cursor(cx, cy, 1);
     draw_score();
     refresh();
-
+*/
 /* can print here
     move(height-2, 0);  
     if(strcmp(argv[1],"-s")==0) 
@@ -118,6 +118,8 @@ restart:
     struct hostent *serv_he;
     //
     move(height-5, 0);  
+    printw("WAITING ANOTHER...\n");
+    refresh();
     if(strcmp(argv[1],"-s")==0) 
     {
         //printw("server\n");
@@ -165,10 +167,23 @@ restart:
             printw("connect error");
         }
     }
+restart:
+    clear();
+    if(player==PLAYER2)
+        turn = 0;
+    else
+        turn = 1;
+    cx = cy = 3;
+    init_board();
+    draw_board();
+    draw_cursor(cx, cy, 1);
+    draw_score();
+    refresh();
+
+
     attron(A_BOLD);
     move(height-1, 0);  printw("Arrow keys: move; Space: put GREEN; Return: put PURPLE; R: reset; Q: quit");
     attroff(A_BOLD);
-
 
     while(true) {           // main loop
         if(turn == 1)
@@ -215,12 +230,15 @@ restart:
                 break;
             case 'q':
             case 'Q':
-                sprintf(msg,"-2,-2i,");
+                sprintf(msg,"-2,-2,");
                 write(w_fd,msg,sizeof(msg));
                 goto quit;
                 break;
             case 'r':
             case 'R':
+                sprintf(msg,"-3,-3,");
+                write(w_fd,msg,sizeof(msg));
+                
                 goto restart;
                 break;
             case 'k':
@@ -270,6 +288,9 @@ restart:
             char *sy = strtok(NULL,",\n");
             if (atoi(sy)==-2) {
                 goto quit;
+            }
+            if (atoi(sy)==-3) {
+                goto restart;
             }
             if(atoi(sy)!=-1) { 
                 //printw("!!!!!!!!!!!%s%s",sx,sy);
